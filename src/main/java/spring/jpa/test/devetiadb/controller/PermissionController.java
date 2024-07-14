@@ -4,14 +4,13 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import spring.jpa.test.devetiadb.dto.request.ApiResponse;
 import spring.jpa.test.devetiadb.dto.request.PermissionRequest;
 import spring.jpa.test.devetiadb.dto.response.PermissionResponse;
 import spring.jpa.test.devetiadb.service.PermissionService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/permissions")
@@ -29,5 +28,19 @@ public class PermissionController {
                 .build();
     }
 
-    ApiResponse<>
+    @GetMapping
+    ApiResponse<List<PermissionResponse>> getAll() {
+        return ApiResponse
+                .<List<PermissionResponse>>builder()
+                .result(permissionService.getAll())
+                .build();
+    }
+
+    @DeleteMapping("/{permissionName}")
+    ApiResponse<Void> getAll(@PathVariable String permissionName) {
+        permissionService.delete(permissionName);
+        return ApiResponse
+                .<Void>builder()
+                .build();
+    }
 }
