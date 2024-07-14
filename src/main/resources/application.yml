@@ -15,5 +15,16 @@ server:
   servlet:
     context-path: /identity
 
+logging:
+  level:
+    org:
+      hibernate:
+        engine:
+          jdbc:
+            spi:
+              SqlExceptionHelper: DEBUG
+      springframework:
+        web: DEBUG
+
 jwt:
   signerKey: 2UTQ8MlOZoMgzvo3uyO2xhVwtBJB6tjj19CtcCZM5ZUPeYA7387Z7L0WrZmqvEo4
