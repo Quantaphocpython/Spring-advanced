@@ -19,6 +19,7 @@ import spring.jpa.test.devetiadb.enums.Role;
 import spring.jpa.test.devetiadb.exception.AppException;
 import spring.jpa.test.devetiadb.exception.ErrorCode;
 import spring.jpa.test.devetiadb.mapper.UserMapper;
+import spring.jpa.test.devetiadb.repository.RoleRepository;
 import spring.jpa.test.devetiadb.repository.UserRepository;
 
 import java.util.HashSet;
@@ -30,12 +31,13 @@ import java.util.Objects;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class UserService {
+    private final RoleRepository roleRepository;
     UserRepository userRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
 
     public User createUser(UserCreationRequest request) {
-        if(userRepository.existsByName(request.getName())) {
+        if (userRepository.existsByName(request.getName())) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
         User user = userMapper.toUser(request);
@@ -72,6 +74,10 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         userMapper.updateUser(user, userUpdateRequest);
+        user.setPassword(passwordEncoder.encode(userUpdateRequest.getPassword()));
+        var roles = roleRepository.findAllById(userUpdateRequest.getRoles());
+        user.setRoles(new HashSet<>(roles));
+
         return userMapper.toUserResponse(userRepository.save(user));
     }
 

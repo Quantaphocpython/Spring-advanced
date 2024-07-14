@@ -16,5 +16,6 @@ public interface UserMapper {
 //    @Mapping(target = "lastName", ignore = true) // ko map thuộc tính lastName của source vaào target lúc này mặc định lastName ở target sẽ là null
     UserResponse toUserResponse(User user);
 
+    @Mapping(target = "roles", ignore = true)
     void updateUser(@MappingTarget User user, UserUpdateRequest request);
 }

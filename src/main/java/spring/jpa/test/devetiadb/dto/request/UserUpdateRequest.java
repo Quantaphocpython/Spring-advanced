@@ -2,8 +2,10 @@ package spring.jpa.test.devetiadb.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import spring.jpa.test.devetiadb.entity.Role;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -15,4 +17,5 @@ public class UserUpdateRequest {
     String firstName;
     String lastName;
     LocalDate dob;
+    List<String> roles;
 }
