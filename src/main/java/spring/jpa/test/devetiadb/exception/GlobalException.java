@@ -52,12 +52,15 @@ public class GlobalException {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     ResponseEntity<ApiResponse<?>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
-        ApiResponse<Map<String, String>> apiResponse = new ApiResponse<>();
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             errors.put(error.getField(), (ErrorCode.valueOf(error.getDefaultMessage())).getMessage() );
         });
-        apiResponse.setCode(1001);
-        apiResponse.setResult(errors);
-        return ResponseEntity.badRequest().body(apiResponse);
+        return ResponseEntity
+                .badRequest()
+                .body(ApiResponse
+                        .builder()
+                        .code(1008)
+                        .result(errors)
+                        .build());
     }
 }
