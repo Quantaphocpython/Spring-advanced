@@ -1,9 +1,11 @@
 package spring.jpa.test.devetiadb.dto.request;
 
+import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import spring.jpa.test.devetiadb.constraint.annotation.DobConstraint;
 
 import java.time.LocalDate;
 
@@ -24,5 +26,7 @@ public class UserCreationRequest {
     String password;
     String firstName;
     String lastName;
+
+    @DobConstraint(min = 18, message = "INVALID_DOB")
     LocalDate dob;
 }
