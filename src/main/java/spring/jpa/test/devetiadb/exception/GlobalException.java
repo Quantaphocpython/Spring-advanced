@@ -1,5 +1,8 @@
 package spring.jpa.test.devetiadb.exception;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.metadata.ConstraintDescriptor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -8,11 +11,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import spring.jpa.test.devetiadb.dto.request.ApiResponse;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalException {
+
+    private static final String MIN_ATTRIBUTE = "min";
 
     @ExceptionHandler(value = Exception.class)
     ResponseEntity<ApiResponse> handlingRuntimeException(RuntimeException runtimeException) {
@@ -51,16 +58,43 @@ public class GlobalException {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     ResponseEntity<ApiResponse<?>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
+        Map<String, String> errors = new LinkedHashMap<>();
+        ErrorCode errorCode = ErrorCode.INVALID_KEY;
+
         ex.getBindingResult().getFieldErrors().forEach(error -> {
-            errors.put(error.getField(), (ErrorCode.valueOf(error.getDefaultMessage())).getMessage() );
+            ConstraintViolation<?> constraintViolation = error.unwrap(ConstraintViolation.class);
+
+            // Lấy ra các attribute được truyền vào trong annotation, từ đây có thể lấy ra giá trị của chúng
+            Map<String, Object> attributes = constraintViolation
+                    .getConstraintDescriptor()
+                    .getAttributes();
+
+            errors.put(
+                    error.getField(),
+                    mapAttribute((ErrorCode.valueOf(error
+                            .getDefaultMessage()))
+                            .getMessage(), attributes)
+            );
+            log.info(attributes.toString());
         });
+
+
         return ResponseEntity
                 .badRequest()
                 .body(ApiResponse
                         .builder()
-                        .code(1008)
+                        .code(errorCode.getCode())
                         .result(errors)
-                        .build());
+                        .build()
+                );
+    }
+
+    //Hàm map attribute min vào dob còn nếu như lỗi ở password thì nó sẽ ko map và trả về message
+    private String mapAttribute(String message, Map<String, Object> attributes) {
+        Object minValue = attributes.get(MIN_ATTRIBUTE);
+        if (Objects.isNull(minValue)) {
+            return message;
+        }
+        return message.replace("{" + MIN_ATTRIBUTE + "}", minValue.toString());
     }
 }
