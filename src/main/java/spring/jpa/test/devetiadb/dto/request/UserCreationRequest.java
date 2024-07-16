@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE) // nếu không xác định phạm vi cụ thể của field thì nó sẽ là private ->  ta có theer xoóa private đi
 public class UserCreationRequest {
-    @Size(min = 3, message = "USERNAME_INVALID")
+    @Size(min = 6, message = "USERNAME_INVALID")
     String name;
 
     //    @Size(min = 8, message = "Password must be at least 8 characters")
