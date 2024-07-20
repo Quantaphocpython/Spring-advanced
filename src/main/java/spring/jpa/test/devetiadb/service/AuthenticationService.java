@@ -48,6 +48,14 @@ public class AuthenticationService {
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
 
+    @NonFinal // thêm vào để nó không thêm vào constructor
+    @Value("${jwt.valid-duration}")
+    protected long VALID_DURATION;
+
+    @NonFinal // thêm vào để nó không thêm vào constructor
+    @Value("${jwt.refreshable-duration}")
+    protected long REFRESHABLE_DURATION;
+
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = userRepository.findByName(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
@@ -70,7 +78,7 @@ public class AuthenticationService {
         boolean isValid = true;
 
         try {
-            verifyToken(token);
+            verifyToken(token, false);
         } catch (AppException ex) {
             isValid = false;
         }
@@ -80,23 +88,28 @@ public class AuthenticationService {
                 .build();
     }
 
-    public void logout(LogoutRequest request) throws ParseException, JOSEException {
-        var signedToken = verifyToken(request.getToken());
-        String jti = signedToken.getJWTClaimsSet().getJWTID();
-        Date expiryTime = signedToken.getJWTClaimsSet().getExpirationTime();
+    public void logout(LogoutRequest request) throws JOSEException, ParseException {
+        try {
+            var signedToken = verifyToken(request.getToken(), true);
+            String jti = signedToken.getJWTClaimsSet().getJWTID();
+            Date expiryTime = signedToken.getJWTClaimsSet().getExpirationTime();
 
-        InvalidatedToken invalidatedToken = InvalidatedToken
-                .builder()
-                .id(jti)
-                .expiryTime(expiryTime)
-                .build();
+            InvalidatedToken invalidatedToken = InvalidatedToken
+                    .builder()
+                    .id(jti)
+                    .expiryTime(expiryTime)
+                    .build();
 
-        invalidatedTokenRepository.save(invalidatedToken);
+            invalidatedTokenRepository.save(invalidatedToken);
+        } catch (AppException e) {
+            log.info("Token already expire");
+        }
+
     }
 
     public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
         // kiểm tra hiệu lực cua token
-        SignedJWT signJWT = verifyToken(request.getToken());
+        SignedJWT signJWT = verifyToken(request.getToken(), true);
 
         String jit = signJWT.getJWTClaimsSet().getJWTID();
         Date expiryTime = signJWT.getJWTClaimsSet().getExpirationTime();
@@ -121,10 +134,18 @@ public class AuthenticationService {
                 .build();
     }
 
-    private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
+    private SignedJWT verifyToken(String token, boolean isRefresh) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY);
         SignedJWT signedJWT = SignedJWT.parse(token);
-        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        Date expiryTime = (isRefresh) ?
+                new Date(
+                        signedJWT
+                                .getJWTClaimsSet()
+                                .getIssueTime().toInstant()
+                                .plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS)
+                                .toEpochMilli()
+                )
+                : signedJWT.getJWTClaimsSet().getExpirationTime();
         var isVerified = signedJWT.verify(verifier);
         if (!(isVerified && expiryTime.after(new Date()))) {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
@@ -147,7 +168,7 @@ public class AuthenticationService {
                 .issuer("devteria.com")
                 .issueTime(new Date())
                 .expirationTime(
-                        new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
+                        new Date(Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli()
                         ))
                 // chúng ta s dụng UUID để làm id cho token vì tỉ lệ trùng của UUID thấp đến mức mà ngta ko cần để ý lun
                 .jwtID(UUID.randomUUID().toString())
