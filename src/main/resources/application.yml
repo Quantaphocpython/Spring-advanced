@@ -28,3 +28,5 @@ logging:
 
 jwt:
   signerKey: 2UTQ8MlOZoMgzvo3uyO2xhVwtBJB6tjj19CtcCZM5ZUPeYA7387Z7L0WrZmqvEo4
+  valid-duration: 3600 # in second
+  refreshable-duration: 36000 # in second
