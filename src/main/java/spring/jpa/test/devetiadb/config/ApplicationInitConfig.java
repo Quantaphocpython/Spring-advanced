@@ -28,12 +28,9 @@ public class ApplicationInitConfig {
     public ApplicationRunner applicationRunner(UserRepository userRepository) {
         return args -> {
            if(userRepository.findByName("admin").isEmpty()) {
-               Set<String> roles = new HashSet<>();
-               roles.add(Role.ADMIN.name());
                User admin = User.builder()
                        .name("admin")
                        .password(passwordEncoder.encode("admin"))
-//                       .roles(roles)
                        .build();
                userRepository.save(admin);
                log.info("Admin user has been created with default password: admin, please change it");
