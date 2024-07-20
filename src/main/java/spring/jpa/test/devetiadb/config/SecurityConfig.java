@@ -1,6 +1,7 @@
 package spring.jpa.test.devetiadb.config;
 
 import com.nimbusds.jose.JWSAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,8 +35,7 @@ public class SecurityConfig {
             "/auth/logout"
     };
 
-    @Value("${jwt.signerKey}")
-    private String signerKey;
+    @Autowired private CustomJwtDecoder customJwtDecoder;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -49,22 +49,13 @@ public class SecurityConfig {
                 .oauth2ResourceServer(
                         oauth2 -> oauth2
                                 .jwt(jwtConfigurer -> jwtConfigurer
-                                        .decoder(jwtDecoder())
+                                        .decoder(customJwtDecoder)
                                         .jwtAuthenticationConverter(jwtAuthenticationConverter()))
                                 //Điểm mà lỗi được bắt, ta sẽ quyết định điều hướng đi đâu
                                 //Chúng ta phải implement 1 interface AuthenticationEntryPoint
                                 // bởi vì chúng ta chỉ sử dụng JwtAuthenticationEntryPoint ở đây nên cũng ko cần tạo bean cho nó
                                 .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
                 )
-                .build();
-    }
-
-    @Bean
-    JwtDecoder jwtDecoder() {
-        SecretKeySpec spec = new SecretKeySpec(signerKey.getBytes(), "HS512");
-        return NimbusJwtDecoder
-                .withSecretKey(spec)
-                .macAlgorithm(MacAlgorithm.HS512)
                 .build();
     }
 
