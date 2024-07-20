@@ -8,10 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import spring.jpa.test.devetiadb.dto.request.ApiResponse;
-import spring.jpa.test.devetiadb.dto.request.AuthenticationRequest;
-import spring.jpa.test.devetiadb.dto.request.IntrospectRequest;
-import spring.jpa.test.devetiadb.dto.request.LogoutRequest;
+import spring.jpa.test.devetiadb.dto.request.*;
 import spring.jpa.test.devetiadb.dto.response.AuthenticationResponse;
 import spring.jpa.test.devetiadb.dto.response.IntrospectResponse;
 import spring.jpa.test.devetiadb.service.AuthenticationService;
@@ -33,6 +30,14 @@ public class AuthenticationController {
                 .build();
     }
 
+    @PostMapping("/refresh")
+    ApiResponse<AuthenticationResponse> refresh(@RequestBody RefreshRequest request) throws ParseException, JOSEException {
+        var result = authenticationService.refreshToken(request);
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(result)
+                .build();
+    }
+
     @PostMapping("/introspect")
     ApiResponse<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request) throws ParseException, JOSEException {
         var result = authenticationService.introspect(request);
@@ -46,4 +51,6 @@ public class AuthenticationController {
         authenticationService.logout(request);
         return ApiResponse.<Void>builder().build();
     }
+
+
 }

@@ -19,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 import spring.jpa.test.devetiadb.dto.request.AuthenticationRequest;
 import spring.jpa.test.devetiadb.dto.request.IntrospectRequest;
 import spring.jpa.test.devetiadb.dto.request.LogoutRequest;
+import spring.jpa.test.devetiadb.dto.request.RefreshRequest;
 import spring.jpa.test.devetiadb.dto.response.AuthenticationResponse;
 import spring.jpa.test.devetiadb.dto.response.IntrospectResponse;
 import spring.jpa.test.devetiadb.entity.InvalidatedToken;
@@ -91,6 +92,33 @@ public class AuthenticationService {
                 .build();
 
         invalidatedTokenRepository.save(invalidatedToken);
+    }
+
+    public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
+        // kiểm tra hiệu lực cua token
+        SignedJWT signJWT = verifyToken(request.getToken());
+
+        String jit = signJWT.getJWTClaimsSet().getJWTID();
+        Date expiryTime = signJWT.getJWTClaimsSet().getExpirationTime();
+
+        InvalidatedToken invalidatedToken = InvalidatedToken
+                .builder()
+                .id(jit)
+                .expiryTime(expiryTime)
+                .build();
+
+        invalidatedTokenRepository.save(invalidatedToken);
+
+        String username = signJWT.getJWTClaimsSet().getSubject();
+        User user = userRepository
+                .findByName(username)
+                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
+
+        var token = generateToken(user);
+        return AuthenticationResponse.builder()
+                .token(token)
+                .isAuthenticated(true)
+                .build();
     }
 
     private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
