@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -30,6 +31,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureMockMvc // giúp tạo 1 mock request tới controller
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@TestPropertySource("/test.properties")
+// thông thường nếu ta ko cấu hình thì nó sẽ tử nhay vào file application.properties để đọc còn bay h ta muốn nó đọc bên trong file test.properties
 class UserControllerTest {
     @Autowired
     MockMvc mockMvc; // gọi đến api của chúng ta
