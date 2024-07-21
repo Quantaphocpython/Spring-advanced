@@ -1,17 +1,18 @@
 package spring.jpa.test.devetiadb.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import spring.jpa.test.devetiadb.dto.request.PermissionRequest;
 import spring.jpa.test.devetiadb.dto.response.PermissionResponse;
 import spring.jpa.test.devetiadb.entity.Permission;
 import spring.jpa.test.devetiadb.mapper.PermissionMapper;
 import spring.jpa.test.devetiadb.repository.PermissionRepository;
-
-import java.util.List;
 
 @Service
 @Slf4j
@@ -29,10 +30,7 @@ public class PermissionService {
 
     public List<PermissionResponse> getAll() {
         List<Permission> permissions = permissionRepository.findAll();
-        return permissions
-                .stream()
-                .map(permissionMapper::toPermissionResponse)
-                .toList();
+        return permissions.stream().map(permissionMapper::toPermissionResponse).toList();
     }
 
     public void delete(String permissionName) {

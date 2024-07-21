@@ -1,10 +1,10 @@
 package spring.jpa.test.devetiadb.dto.response;
 
+import java.util.Set;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import spring.jpa.test.devetiadb.entity.Permission;
-
-import java.util.Set;
 
 @Data
 @NoArgsConstructor

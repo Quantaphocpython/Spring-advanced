@@ -1,16 +1,17 @@
 package spring.jpa.test.devetiadb.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
 import spring.jpa.test.devetiadb.dto.request.ApiResponse;
 import spring.jpa.test.devetiadb.dto.request.PermissionRequest;
 import spring.jpa.test.devetiadb.dto.response.PermissionResponse;
 import spring.jpa.test.devetiadb.service.PermissionService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/permissions")
@@ -22,16 +23,14 @@ public class PermissionController {
 
     @PostMapping
     ApiResponse<PermissionResponse> create(@RequestBody PermissionRequest request) {
-        return ApiResponse
-                .<PermissionResponse>builder()
+        return ApiResponse.<PermissionResponse>builder()
                 .result(permissionService.create(request))
                 .build();
     }
 
     @GetMapping
     ApiResponse<List<PermissionResponse>> getAll() {
-        return ApiResponse
-                .<List<PermissionResponse>>builder()
+        return ApiResponse.<List<PermissionResponse>>builder()
                 .result(permissionService.getAll())
                 .build();
     }
@@ -39,8 +38,6 @@ public class PermissionController {
     @DeleteMapping("/{permissionName}")
     ApiResponse<Void> getAll(@PathVariable String permissionName) {
         permissionService.delete(permissionName);
-        return ApiResponse
-                .<Void>builder()
-                .build();
+        return ApiResponse.<Void>builder().build();
     }
 }

@@ -1,8 +1,13 @@
 package spring.jpa.test.devetiadb.service;
 
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.util.Optional;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,20 +16,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
+
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import spring.jpa.test.devetiadb.dto.request.UserCreationRequest;
 import spring.jpa.test.devetiadb.dto.response.UserResponse;
 import spring.jpa.test.devetiadb.entity.User;
 import spring.jpa.test.devetiadb.exception.AppException;
 import spring.jpa.test.devetiadb.exception.ErrorCode;
 import spring.jpa.test.devetiadb.repository.UserRepository;
-
-import java.time.LocalDate;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Slf4j
@@ -43,12 +44,11 @@ class UserServiceTest {
     LocalDate dob;
 
     @BeforeEach
-        // chạy trước các func test
+    // chạy trước các func test
     void initData() {
         dob = LocalDate.of(1990, 1, 1);
 
-        request = UserCreationRequest
-                .builder()
+        request = UserCreationRequest.builder()
                 .name("kaitoudads")
                 .firstName("Trần")
                 .lastName("Quân")
@@ -56,8 +56,7 @@ class UserServiceTest {
                 .dob(dob)
                 .build();
 
-        userResponse = UserResponse
-                .builder()
+        userResponse = UserResponse.builder()
                 .id("bad5d857-561c-491f-b482-281122a91a24")
                 .name("kaitoudads")
                 .firstName("Trần")
@@ -65,8 +64,7 @@ class UserServiceTest {
                 .dob(dob)
                 .build();
 
-        user = User
-                .builder()
+        user = User.builder()
                 .id("bad5d857-561c-491f-b482-281122a91a24")
                 .name("kaitoudads")
                 .firstName("Trần")
@@ -81,13 +79,12 @@ class UserServiceTest {
         when(userRepository.existsByName(anyString())).thenReturn(false);
         when(userRepository.save(any())).thenReturn(user);
 
-        //WHEN
+        // WHEN
         var response = userService.createUser(request);
 
-        //THEN
+        // THEN
         Assertions.assertThat(response.getId()).isEqualTo("bad5d857-561c-491f-b482-281122a91a24");
         Assertions.assertThat(response.getName()).isEqualTo("kaitoudads");
-
     }
 
     @Test
@@ -95,18 +92,17 @@ class UserServiceTest {
         // GIVEN
         when(userRepository.existsByName(anyString())).thenReturn(true);
 
-        //WHEN
+        // WHEN
         var exception = assertThrows(AppException.class, () -> userService.createUser(request));
 
-        //Then
+        // Then
         Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(ErrorCode.USER_EXISTED.getCode());
     }
 
     @Test
     @WithMockUser(username = "kaitoudads")
     void getMyInfo_valid_success() {
-        when(userRepository.findByName(anyString()))
-                .thenReturn(Optional.of(user));
+        when(userRepository.findByName(anyString())).thenReturn(Optional.of(user));
 
         var response = userService.getMyInfo();
 
@@ -117,8 +113,7 @@ class UserServiceTest {
     @Test
     @WithMockUser(username = "kaitoudads")
     void getMyInfo_userNotFound_fail() {
-        when(userRepository.findByName(anyString()))
-                .thenReturn(Optional.ofNullable(null));
+        when(userRepository.findByName(anyString())).thenReturn(Optional.ofNullable(null));
 
         var exception = assertThrows(AppException.class, () -> userService.getMyInfo());
 

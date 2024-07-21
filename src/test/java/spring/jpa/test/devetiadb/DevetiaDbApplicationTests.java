@@ -1,25 +1,23 @@
 package spring.jpa.test.devetiadb;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import jakarta.xml.bind.DatatypeConverter;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import java.security.NoSuchAlgorithmException;
+import jakarta.xml.bind.DatatypeConverter;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest
 @Slf4j
 class DevetiaDbApplicationTests {
 
     @Test
-    void contextLoads() {
-    }
+    void contextLoads() {}
 
     @Test
     void hash() throws NoSuchAlgorithmException {
@@ -45,5 +43,4 @@ class DevetiaDbApplicationTests {
         log.info("BCrypt round 1: {}", passwordEncoder.encode(password));
         log.info("BCrypt round 2: {}", passwordEncoder.encode(password));
     }
-
 }
