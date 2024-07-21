@@ -9,5 +9,4 @@ public class DevetiaDbApplication {
     public static void main(String[] args) {
         SpringApplication.run(DevetiaDbApplication.class, args);
     }
-
 }

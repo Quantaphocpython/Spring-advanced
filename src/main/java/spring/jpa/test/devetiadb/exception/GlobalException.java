@@ -1,19 +1,19 @@
 package spring.jpa.test.devetiadb.exception;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.metadata.ConstraintDescriptor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import spring.jpa.test.devetiadb.dto.request.ApiResponse;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
+import spring.jpa.test.devetiadb.dto.request.ApiResponse;
 
 @ControllerAdvice
 @Slf4j
@@ -38,19 +38,15 @@ public class GlobalException {
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorCode.getMessage());
 
-        return ResponseEntity
-                .status(errorCode.getStatusCode())
-                .body(apiResponse);
+        return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
     }
 
     @ExceptionHandler(value = AccessDeniedException.class)
     ResponseEntity<ApiResponse> handlingAccessDeniedException() {
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
 
-        return ResponseEntity
-                .status(errorCode.getStatusCode())
-                .body(ApiResponse
-                        .builder()
+        return ResponseEntity.status(errorCode.getStatusCode())
+                .body(ApiResponse.builder()
                         .code(errorCode.getCode())
                         .message(errorCode.getMessage())
                         .build());
@@ -65,31 +61,23 @@ public class GlobalException {
             ConstraintViolation<?> constraintViolation = error.unwrap(ConstraintViolation.class);
 
             // Lấy ra các attribute được truyền vào trong annotation, từ đây có thể lấy ra giá trị của chúng
-            Map<String, Object> attributes = constraintViolation
-                    .getConstraintDescriptor()
-                    .getAttributes();
+            Map<String, Object> attributes =
+                    constraintViolation.getConstraintDescriptor().getAttributes();
 
             errors.put(
                     error.getField(),
-                    mapAttribute((ErrorCode.valueOf(error
-                            .getDefaultMessage()))
-                            .getMessage(), attributes)
-            );
+                    mapAttribute((ErrorCode.valueOf(error.getDefaultMessage())).getMessage(), attributes));
             log.info(attributes.toString());
         });
 
-
-        return ResponseEntity
-                .badRequest()
-                .body(ApiResponse
-                        .builder()
+        return ResponseEntity.badRequest()
+                .body(ApiResponse.builder()
                         .code(errorCode.getCode())
                         .result(errors)
-                        .build()
-                );
+                        .build());
     }
 
-    //Hàm map attribute min vào dob còn nếu như lỗi ở password thì nó sẽ ko map và trả về message
+    // Hàm map attribute min vào dob còn nếu như lỗi ở password thì nó sẽ ko map và trả về message
     private String mapAttribute(String message, Map<String, Object> attributes) {
         Object minValue = attributes.get(MIN_ATTRIBUTE);
         if (Objects.isNull(minValue)) {

@@ -1,21 +1,17 @@
 package spring.jpa.test.devetiadb.config;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import spring.jpa.test.devetiadb.entity.User;
-import spring.jpa.test.devetiadb.enums.Role;
-import spring.jpa.test.devetiadb.repository.UserRepository;
 
-import java.util.HashSet;
-import java.util.Set;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import spring.jpa.test.devetiadb.entity.User;
+import spring.jpa.test.devetiadb.repository.UserRepository;
 
 @Configuration
 @RequiredArgsConstructor
@@ -24,13 +20,13 @@ import java.util.Set;
 public class ApplicationInitConfig {
     PasswordEncoder passwordEncoder;
 
-    //ApplicationRunner sẽ được khởi chạy mỗi lần ta start
+    // ApplicationRunner sẽ được khởi chạy mỗi lần ta start
     @Bean
     @ConditionalOnProperty(
             prefix = "spring",
             value = "datasource.driverClassName",
-            havingValue = "com.mysql.cj.jdbc.Driver"
-    ) // bean này sẽ chỉ được init khi spring đọc file property là test.properties hay cụ thể hơn khi driver là mysql
+            havingValue = "com.mysql.cj.jdbc.Driver") // bean này sẽ chỉ được init khi spring đọc file property là
+    // test.properties hay cụ thể hơn khi driver là mysql
     public ApplicationRunner applicationRunner(UserRepository userRepository) {
         return args -> {
             if (userRepository.findByName("admin").isEmpty()) {
@@ -43,5 +39,4 @@ public class ApplicationInitConfig {
             }
         };
     }
-
 }

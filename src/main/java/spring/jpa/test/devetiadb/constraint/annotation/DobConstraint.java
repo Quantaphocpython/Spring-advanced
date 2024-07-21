@@ -1,13 +1,14 @@
 package spring.jpa.test.devetiadb.constraint.annotation;
 
-import jakarta.validation.Constraint;
-import jakarta.validation.Payload;
-import spring.jpa.test.devetiadb.constraint.validator.DobValidator;
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.*;
 
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
+
+import spring.jpa.test.devetiadb.constraint.validator.DobValidator;
 
 @Target({FIELD}) // chỉ định nơi có hiệu lực
 @Retention(RUNTIME) // chỉ định khi xử lí, ở đây là runtime

@@ -1,24 +1,21 @@
 package spring.jpa.test.devetiadb.controller;
 
+import java.util.List;
 
 import jakarta.validation.Valid;
+
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
 import spring.jpa.test.devetiadb.dto.request.ApiResponse;
 import spring.jpa.test.devetiadb.dto.request.UserCreationRequest;
 import spring.jpa.test.devetiadb.dto.request.UserUpdateRequest;
 import spring.jpa.test.devetiadb.dto.response.UserResponse;
-import spring.jpa.test.devetiadb.entity.User;
 import spring.jpa.test.devetiadb.service.UserService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -29,7 +26,7 @@ public class UserController {
     UserService userService;
 
     @PostMapping
-    ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request){
+    ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
         log.info("Controller: create User");
         return ApiResponse.<UserResponse>builder()
                 .result(userService.createUser(request))
@@ -72,5 +69,4 @@ public class UserController {
         userService.deleteUserById(userId);
         return "User has been deleted";
     }
-
 }
