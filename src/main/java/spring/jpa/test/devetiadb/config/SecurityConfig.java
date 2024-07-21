@@ -23,6 +23,8 @@ import spring.jpa.test.devetiadb.enums.Role;
 
 import javax.crypto.spec.SecretKeySpec;
 
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
 @Configuration // nó sẽ tự động chạy vào và đẩ các bean vào context
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -47,6 +49,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                                 .anyRequest().authenticated()
                 )
+                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .oauth2ResourceServer(
                         oauth2 -> oauth2
                                 .jwt(jwtConfigurer -> jwtConfigurer
