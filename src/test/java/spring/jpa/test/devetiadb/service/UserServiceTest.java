@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.TestPropertySource;
 import spring.jpa.test.devetiadb.dto.request.UserCreationRequest;
 import spring.jpa.test.devetiadb.dto.response.UserResponse;
 import spring.jpa.test.devetiadb.entity.User;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@TestPropertySource("/test.properties")
 class UserServiceTest {
     @Autowired
     UserService userService;
