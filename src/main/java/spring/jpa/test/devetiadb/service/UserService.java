@@ -36,17 +36,21 @@ public class UserService {
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
 
-    public User createUser(UserCreationRequest request) {
-        if (userRepository.existsByName(request.getName())) {
+    public UserResponse createUser(UserCreationRequest request){
+        log.info("Service: Create User");
+
+        if (userRepository.existsByName(request.getName()))
             throw new AppException(ErrorCode.USER_EXISTED);
-        }
+
         User user = userMapper.toUser(request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
         HashSet<String> roles = new HashSet<>();
         roles.add(Role.USER.name());
-//        user.setRoles(roles);
 
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        return userRepository.save(user);
+        // user.setRoles(roles);
+
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 
     public UserResponse getMyInfo() {
