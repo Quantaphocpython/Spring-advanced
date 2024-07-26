@@ -2,9 +2,9 @@
 
 spring:
   datasource:
-    username: root
-    password: root
-    url: "jdbc:mysql://127.0.0.1:3308/identity"
+    username: ${DBMS_USERNAME:root}
+    password: ${DBMS_PASSWORD:root}
+    url: ${DBMS_CONNECTION}
     driverClassName: "com.mysql.cj.jdbc.Driver"
   jpa:
     show-sql: true
