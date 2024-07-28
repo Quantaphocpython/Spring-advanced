@@ -58,7 +58,7 @@ public class AuthenticationService {
     protected long REFRESHABLE_DURATION;
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        log.info("Signer key: {}",SIGNER_KEY);
+        log.info("Signer key: {}", SIGNER_KEY);
         var user = userRepository
                 .findByName(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));

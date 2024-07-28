@@ -46,11 +46,11 @@ public class UserService {
         roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
         user.setRoles(roles);
 
-      try {
-          user = userRepository.save(user);
-      } catch (DataIntegrityViolationException exception) {
-        throw new AppException(ErrorCode.USER_EXISTED);
-      }
+        try {
+            user = userRepository.save(user);
+        } catch (DataIntegrityViolationException exception) {
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
 
         return userMapper.toUserResponse(user);
     }
