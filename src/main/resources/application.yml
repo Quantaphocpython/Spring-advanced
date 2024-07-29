@@ -4,7 +4,7 @@ spring:
   datasource:
     username: ${DBMS_USERNAME:root}
     password: ${DBMS_PASSWORD:root}
-    url: ${DBMS_CONNECTION:jdbc:mysql://127.0.0.1:3308/identity}
+    url: ${DBMS_CONNECTION:jdbc:mysql://mysqlcontainer-8.0.37:3308/identity}
     driverClassName: "com.mysql.cj.jdbc.Driver"
   jpa:
     show-sql: true
